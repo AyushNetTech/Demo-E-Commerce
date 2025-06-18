@@ -11,7 +11,7 @@ data class ProductData(
     val id: Int,
     val sku: String,
     val name: String,
-    val price: Double,
+    val price: String,
     val description: String,
     val short_description: String,
     val image: String,

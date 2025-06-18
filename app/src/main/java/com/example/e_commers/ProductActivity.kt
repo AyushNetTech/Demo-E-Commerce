@@ -30,10 +30,10 @@ class ProductActivity : AppCompatActivity() {
         setContentView(R.layout.activity_product)
 
         productImage = findViewById(R.id.productImage)
-        productTitle = findViewById(R.id.productTitle)
+        productTitle = findViewById(R.id.Title)
         productPrice = findViewById(R.id.productPrice)
-        productBrandName = findViewById(R.id.brandName)
-        productBrandDis = findViewById(R.id.brandDis)
+        productBrandName = findViewById(R.id.productTitle)
+        productBrandDis = findViewById(R.id.productSubTitle)
 
         productDescription = findViewById(R.id.productDescription)
 
@@ -45,13 +45,14 @@ class ProductActivity : AppCompatActivity() {
             val firstWord = BrandFName.firstOrNull() ?: ""
             productBrandDis.text = product.data.name
             productBrandName.text= firstWord.uppercase()
-            productPrice.text = "${product.data.price} KWD"
+            val num=product.data.price.toDouble()
+            productPrice.text = "${"%.2f".format(num)} KWD"
             productDescription.text = product.data.description
 
             val imageUrl = product.data.image
 
             Log.d("ProductActivity", "Image URL: ${imageUrl}")
-            Log.d("ProductActivity", "Name: ${product.data.name}")
+            Log.d("ProductActivity", "kwd: ${"%.2f".format(num)}")
 
             Glide.with(this)
                 .load(imageUrl)
