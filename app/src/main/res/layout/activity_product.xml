@@ -1,5 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FAF9F6">
@@ -15,17 +16,46 @@
             android:layout_width="match_parent"
             android:layout_height="35dp">
 
+            <ImageView
+                android:id="@+id/BackBtn"
+                android:layout_width="40dp"
+                android:layout_height="25dp"
+                android:src="@drawable/backarrow"
+                app:layout_constraintStart_toStartOf="parent" />
+
             <TextView
                 android:id="@+id/Title"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="top"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="17sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toStartOf="@+id/Favorite"
+                app:layout_constraintStart_toEndOf="@+id/BackBtn" />
+
+            <ImageView
+                android:id="@+id/Favorite"
+                android:layout_width="30dp"
+                android:layout_height="25dp"
+                android:src="@drawable/favorite"
+                app:layout_constraintEnd_toStartOf="@+id/OpenBrowser" />
+
+            <ImageView
+                android:id="@+id/OpenBrowser"
+                android:layout_width="30dp"
+                android:layout_height="25dp"
+                android:src="@drawable/openbrowser"
+                app:layout_constraintEnd_toStartOf="@+id/Bag" />
+
+            <ImageView
+                android:id="@+id/Bag"
+                android:layout_width="30dp"
+                android:layout_height="25dp"
+                android:src="@drawable/bag"
+                app:layout_constraintEnd_toEndOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
         <ImageView
             android:id="@+id/productImage"
@@ -52,7 +82,6 @@
                 android:id="@+id/productTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ANESTHESIA"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -66,7 +95,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="3.50 KWD"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -77,8 +105,14 @@
             android:id="@+id/productSubTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Once Collection Weekly"
             android:textSize="14sp"
+            android:textColor="#888888"
+            android:layout_marginTop="2dp"/>
+        <TextView
+            android:id="@+id/productSku"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
             android:textColor="#888888"
             android:layout_marginTop="2dp"/>
 
@@ -112,13 +146,15 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="16dp">
-            <Button
+            <ImageView
                 android:id="@+id/btnMinus"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:src="@drawable/remove"
+                android:background="@color/black"
                 android:text="-"
-                android:textSize="20sp"
-                android:backgroundTint="#E0E0E0" />
+                android:textSize="16sp"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/tvQuantity"
@@ -128,15 +164,25 @@
                 android:text="1"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:textColor="@color/black"
                 android:layout_marginHorizontal="8dp" />
 
-            <Button
+            <LinearLayout
                 android:id="@+id/btnPlus"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:text="+"
-                android:textSize="20sp"
-                android:backgroundTint="#E0E0E0" />
+                android:background="@color/black"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/add"
+                    android:background="@color/black"
+                    android:textSize="16sp"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <!-- Add to Bag Button -->
@@ -159,7 +205,7 @@
             android:id="@+id/btnShare"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="Add to Bag"
+            android:text="Share"
             android:textSize="16sp"
             android:layout_marginBottom="5dp"
             android:textColor="@color/black"

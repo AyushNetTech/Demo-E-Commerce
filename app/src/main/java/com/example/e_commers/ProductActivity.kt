@@ -20,6 +20,7 @@ class ProductActivity : AppCompatActivity() {
     private lateinit var productBrandName: TextView
     private lateinit var productPrice: TextView
     private lateinit var productBrandDis: TextView
+    private lateinit var productSku: TextView
     private lateinit var productDescription: TextView
 
     private val viewModel: ProductViewModel by viewModels()
@@ -31,6 +32,7 @@ class ProductActivity : AppCompatActivity() {
 
         productImage = findViewById(R.id.productImage)
         productTitle = findViewById(R.id.Title)
+        productSku = findViewById(R.id.productSku)
         productPrice = findViewById(R.id.productPrice)
         productBrandName = findViewById(R.id.productTitle)
         productBrandDis = findViewById(R.id.productSubTitle)
@@ -45,6 +47,7 @@ class ProductActivity : AppCompatActivity() {
             val firstWord = BrandFName.firstOrNull() ?: ""
             productBrandDis.text = product.data.name
             productBrandName.text= firstWord.uppercase()
+            productSku.text = "Sku: ${product.data.sku}"
             val num=product.data.price.toDouble()
             productPrice.text = "${"%.2f".format(num)} KWD"
             productDescription.text = product.data.description
