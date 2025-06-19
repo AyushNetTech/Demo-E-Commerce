@@ -22,7 +22,8 @@ data class ProductData(
     val gender: String,
     val rating: Rating,
     val is_favorite: Boolean,
-    val stock_status: String
+    val stock_status: String,
+    val configurable_option: List<ConfigurableOption>
 )
 
 data class Category(
@@ -34,4 +35,30 @@ data class Rating(
     val value: Int,
     val count: Int
 )
+
+data class ColorOption(
+    val value: String,
+    val swatchUrl: String
+)
+
+data class ConfigurableOption(
+    @SerializedName("attribute_id")
+    val attributeId: Int,
+
+    val type: String,
+
+    @SerializedName("attribute_code")
+    val attributeCode: String,
+
+    val attributes: List<ColorAttribute>
+)
+
+data class ColorAttribute(
+    val value: String,
+
+    @SerializedName("swatch_url")
+    val swatchUrl: String
+)
+
+
 
