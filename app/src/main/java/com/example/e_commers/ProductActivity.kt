@@ -7,6 +7,7 @@ import android.text.Html
 import android.text.Spanned
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -17,12 +18,14 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import java.util.Locale
 
 class ProductActivity : AppCompatActivity() {
 
-    private lateinit var productImage: ImageView
     private lateinit var productTitle: TextView
     private lateinit var productBrandName: TextView
     private lateinit var productPrice: TextView
@@ -33,6 +36,12 @@ class ProductActivity : AppCompatActivity() {
     private lateinit var scrollV: ScrollView
 
     private var isDescriptionVisible = false
+    private var selectedSwatchIndex = -1
+    private lateinit var galleryContainer: LinearLayout
+
+    private lateinit var imageSlider: ViewPager2
+    private lateinit var dotIndicator: TabLayout
+
 
     private val viewModel: ProductViewModel by viewModels()
 
@@ -44,8 +53,12 @@ class ProductActivity : AppCompatActivity() {
         window.statusBarColor = ContextCompat.getColor(this, R.color.OffWhite)
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
 
+        galleryContainer = findViewById(R.id.galleryContainer)
 
-        productImage = findViewById(R.id.productImage)
+
+        imageSlider = findViewById(R.id.imageSlider)
+        dotIndicator = findViewById(R.id.dotIndicator)
+
         productTitle = findViewById(R.id.Title)
         productSku = findViewById(R.id.productSku)
         productPrice = findViewById(R.id.productPrice)
@@ -90,39 +103,48 @@ class ProductActivity : AppCompatActivity() {
             val imageUrl = product.data.image
             Log.d("ProductActivity", "Image URL: $imageUrl")
 
-            Glide.with(this)
-                .load(imageUrl)
-                .into(productImage)
-
             val attributes = product.data.configurable_option.firstOrNull()?.attributes ?: emptyList()
 
             val colorOptions = attributes.map {
                 ColorOption(
                     value = it.value,
-                    swatchUrl = it.swatchUrl
+                    swatchUrl = it.swatchUrl,
+                    previewImageUrl = it.images.firstOrNull() ?: "",
+                    previewImageList = it.images
                 )
             }
 
+            if (colorOptions.isNotEmpty()) {
+                selectedSwatchIndex = 0
+                showGalleryImages(colorOptions[0].previewImageList)
+            }
+
             populateColorOptions(colorOptions)
+
+
         }
 
         viewModel.error.observe(this) {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun populateColorOptions(colors: List<ColorOption>) {
         val container = findViewById<LinearLayout>(R.id.colorContainer)
         container.removeAllViews()
 
         val size = 140
 
-        for (color in colors) {
-
+        colors.forEachIndexed { index, color ->
             val frameLayout = FrameLayout(this).apply {
                 layoutParams = LinearLayout.LayoutParams(size, size).apply {
                     setMargins(15, 0, 15, 0)
                 }
-                background = ContextCompat.getDrawable(this@ProductActivity, R.drawable.color_circle_bg)
+
+                background = ContextCompat.getDrawable(
+                    this@ProductActivity,
+                    if (index == selectedSwatchIndex) R.drawable.color_circle_bg else R.drawable.color_circle_bg
+                )
             }
 
             val imageView = ImageView(this).apply {
@@ -132,6 +154,12 @@ class ProductActivity : AppCompatActivity() {
                 )
                 scaleType = ImageView.ScaleType.CENTER_CROP
                 setPadding(6, 6, 6, 6)
+
+                setOnClickListener {
+                    selectedSwatchIndex = index
+                    populateColorOptions(colors)
+                    showGalleryImages(color.previewImageList)
+                }
             }
 
             Glide.with(this)
@@ -143,22 +171,24 @@ class ProductActivity : AppCompatActivity() {
             container.addView(frameLayout)
         }
     }
+
+
     @Suppress("DEPRECATION")
     fun formatHtmlDescription(rawHtml: String): Spanned {
         // Clean and format HTML string
         val cleanedHtml = rawHtml
-            .replace("\r\n", "")                             // Remove \r\n
+            .replace("\r\n", "")
             .replace("<ul>", "")
             .replace("</ul>", "")
-            .replace("<li>", "• ")                           // Replace <li> with bullet
+            .replace("<li>", "• ")
             .replace("</li>", "<br>")
-            .replace("<br>", "<br/>")                        // Normalize <br>
-            .replace(Regex("(?i)<p[^>]*>"), "")              // Remove <p>
-            .replace("</p>", "<br/>")                        // Treat </p> as line break
-            .replace("&nbsp;", " ")                          // Fix non-breaking spaces
-            .replace(Regex("<(?!br|b|/b)[^>]+>"), "")        // Remove other tags except <br> and <b>
+            .replace("<br>", "<br/>")
+            .replace(Regex("(?i)<p[^>]*>"), "")
+            .replace("</p>", "<br/>")
+            .replace("&nbsp;", " ")
+            .replace(Regex("<(?!br|b|/b)[^>]+>"), "")
             .replace(Regex("(?i)(Key Features:|How To Wear Your Contact Lense:|About Anesthesia:)")) {
-                "<b>${it.value}</b>"                         // Bold specific headings
+                "<b>${it.value}</b>"
             }
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -167,5 +197,25 @@ class ProductActivity : AppCompatActivity() {
             Html.fromHtml(cleanedHtml)
         }
     }
+
+    private fun showGalleryImages(images: List<String>) {
+        val adapter = ImageSliderAdapter(images)
+        imageSlider.adapter = adapter
+
+        TabLayoutMediator(dotIndicator, imageSlider) { _, _ -> }.attach()
+
+        val tabStrip = dotIndicator.getChildAt(0) as? ViewGroup
+        tabStrip?.let {
+            for (i in 0 until it.childCount) {
+                val tab = it.getChildAt(i)
+                val layoutParams = tab.layoutParams as ViewGroup.MarginLayoutParams
+                layoutParams.setMargins(6, 0, 6, 0)
+                tab.layoutParams = layoutParams
+            }
+        }
+
+    }
+
+
 
 }

@@ -61,5 +61,10 @@ dependencies {
 //    ksp(libs.compiler)
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 
+    implementation (libs.material.v1110)
+    implementation (libs.androidx.viewpager2)
+
+
+
 
 }

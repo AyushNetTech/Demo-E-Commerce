@@ -38,8 +38,11 @@ data class Rating(
 
 data class ColorOption(
     val value: String,
-    val swatchUrl: String
+    val swatchUrl: String,
+    val previewImageUrl: String,
+    val previewImageList: List<String> // New field
 )
+
 
 data class ConfigurableOption(
     @SerializedName("attribute_id")
@@ -57,8 +60,11 @@ data class ColorAttribute(
     val value: String,
 
     @SerializedName("swatch_url")
-    val swatchUrl: String
+    val swatchUrl: String,
+
+    val images: List<String>
 )
+
 
 
 
