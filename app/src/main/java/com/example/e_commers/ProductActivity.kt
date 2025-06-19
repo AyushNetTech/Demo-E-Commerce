@@ -1,7 +1,10 @@
 package com.example.e_commers
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
@@ -77,10 +80,12 @@ class ProductActivity : AppCompatActivity() {
             val firstWord = brandFName.firstOrNull() ?: ""
             productBrandDis.text = product.data.name
             productBrandName.text = firstWord.uppercase(Locale.getDefault())
-            productSku.text = "Sku: ${product.data.sku}"
+            productSku.text = "SKU: ${product.data.sku}"
             val num = product.data.price.toDoubleOrNull() ?: 0.0
             productPrice.text = "${"%.2f".format(num)} KWD"
-            productDescription.text = product.data.description
+            val rawHtml = product.data.description
+            val formattedText = formatHtmlDescription(rawHtml)
+            productDescription.text = formattedText
 
             val imageUrl = product.data.image
             Log.d("ProductActivity", "Image URL: $imageUrl")
@@ -136,6 +141,30 @@ class ProductActivity : AppCompatActivity() {
 
             frameLayout.addView(imageView)
             container.addView(frameLayout)
+        }
+    }
+    @Suppress("DEPRECATION")
+    fun formatHtmlDescription(rawHtml: String): Spanned {
+        // Clean and format HTML string
+        val cleanedHtml = rawHtml
+            .replace("\r\n", "")                             // Remove \r\n
+            .replace("<ul>", "")
+            .replace("</ul>", "")
+            .replace("<li>", "• ")                           // Replace <li> with bullet
+            .replace("</li>", "<br>")
+            .replace("<br>", "<br/>")                        // Normalize <br>
+            .replace(Regex("(?i)<p[^>]*>"), "")              // Remove <p>
+            .replace("</p>", "<br/>")                        // Treat </p> as line break
+            .replace("&nbsp;", " ")                          // Fix non-breaking spaces
+            .replace(Regex("<(?!br|b|/b)[^>]+>"), "")        // Remove other tags except <br> and <b>
+            .replace(Regex("(?i)(Key Features:|How To Wear Your Contact Lense:|About Anesthesia:)")) {
+                "<b>${it.value}</b>"                         // Bold specific headings
+            }
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(cleanedHtml, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            Html.fromHtml(cleanedHtml)
         }
     }
 
